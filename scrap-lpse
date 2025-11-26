@@ -1,0 +1,103 @@
+import time
+import pandas as pd
+import requests
+import re,json
+import mysql.connector
+
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
+
+#------------------------------------------
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="root",
+  database="app_lkpp"
+)
+
+
+#------------------------------------------
+# Set up the web driver
+def setup_driver():
+	options = webdriver.ChromeOptions()
+	options.add_argument("--start-maximized")
+	options.add_argument("--disable-blink-features=AutomationControlled")
+	options.add_experimental_option("excludeSwitches", ["enable-logging","enable-automation"])
+	driver = webdriver.Chrome(options=options)
+	return driver
+
+
+
+
+
+#------------------------------------------
+mycursor = mydb.cursor()
+mycursor.execute("SELECT link FROM data_link WHERE status='aktif'")
+myresult = mycursor.fetchall()
+for x in myresult:
+	#print(x[0])
+	link = x[0]
+	print("---------------------------")
+	print(link)
+
+	driver = setup_driver()
+	driver.get(f"https://spse.inaproc.id/{link}/nontender?kategoriId=&tahun=2025&instansiId=&rekanan=")
+	time.sleep(5)
+	element1 = driver.find_element("xpath",'//*[@id="tbllelang_filter"]/label/input')
+	driver.implicitly_wait(5)
+	element1.send_keys('akuntan')
+	element1.send_keys(Keys.ENTER)
+	time.sleep(5)
+
+	driver.get(f"https://spse.inaproc.id/{link}/pencatatan?kategoriId=&tahun=2025&instansiId=&rekanan=")
+	time.sleep(5)
+	element1 = driver.find_element("xpath",'//*[@id="tbllelang_filter"]/label/input')
+	driver.implicitly_wait(5)
+	element1.send_keys('akuntan')
+	element1.send_keys(Keys.ENTER)
+	time.sleep(5)
+
+	driver.quit()
+
+
+
+
+# driver.get("https://spse.inaproc.id/jabarprov/lelang")
+# time.sleep(3)
+# tbl_next = driver.find_element("xpath",'//*[@id="tbllelang_next"]/a')
+# driver.implicitly_wait(5)
+# tbl_next.click()
+# time.sleep(10)
+
+
+# link = "https://spse.inaproc.id/jakarta/nontender?kategoriId=&tahun=2025&instansiId=&rekanan="
+# driver.get(link)
+# driver.implicitly_wait(5)
+
+# element1 = driver.find_element("xpath",'//*[@id="tbllelang_filter"]/label/input')
+# driver.implicitly_wait(5)
+# element1.send_keys('akuntan')
+# element1.send_keys(Keys.ENTER)
+
+
+
+
+
+#-------------------------------------------------------------
+# select_element =  driver.find_element("xpath",'//*[@id="searchResult_length"]/label/select/option[4]')
+# driver.implicitly_wait(5)
+# select_element.click()
+
+# tbl_next = driver.find_element("xpath",'//*[@id="searchResult_next"]/a')
+# tbl_next.click()
+# time.sleep(20)
+# driver.quit()
+
+
+
